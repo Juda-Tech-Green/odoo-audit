@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Diagnóstico Odoo-Domo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 40px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .kpis {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 180px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        table {
+            border-collapse: collapse;
+            background: white;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #eee;
+            text-align: left;
+        }
+
+        .alert {
+            background: #ffe5e5;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .alert li {
+            color: #b30000;
+        }
+
+
+    </style>
+</head>
+
+<body>
+{% include "navbar.html" %}
+
+
+<h1>Diagnóstico General - Domo</h1>
+<p>Auditoría estructural de productos y categorías</p>
+
+<div class="kpis">
+    <div class="card">
+        <h2>{{ total_products }}</h2>
+        <p>Total de productos</p>
+    </div>
+    <div class="card">
+        <h2>{{total_categories}}</h2>
+        <p>Total de categorías</p>
+    </div>
+
+
+    <div class="card">
+        <h2>{{ products_per_company|length }}</h2>
+        <p>Empresas activas</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ empty_categories|length }}</h2>
+        <p>Categorías vacías</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ products_without_channels|length }}</h2>
+        <p>Sin ningún canal</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ products_only_pos|length }}</h2>
+        <p>Solo POS</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ products_only_web|length }}</h2>
+        <p>Solo Web</p>
+    </div>
+
+
+</div>
+
+<h2>Productos por empresa</h2>
+<table>
+    <tr>
+        <th>Empresa</th>
+        <th>Cantidad</th>
+    </tr>
+    {% for company, count in products_per_company.items() %}
+    <tr>
+        <td>{{ company }}</td>
+        <td>{{ count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Categorías sin productos</h2>
+<div class="alert">
+    <ul>
+        {% for c in empty_categories %}
+        <li>{{ c.name }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>

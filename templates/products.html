@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Diagnóstico Odoo-Domo | Productos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 40px;
+        }
+
+        h1, h2 {
+            margin-top: 30px;
+        }
+
+        table {
+            border-collapse: collapse;
+            background: white;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #eee;
+            text-align: left;
+        }
+
+        .alert {
+            background: #ffe5e5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .limit-10 tr:nth-child(n+12) {
+        display: none;
+        }
+
+        .limit-10::after {
+        content: "Mostrando solo los primeros 10 resultados (usa búsqueda)";
+        display: block;
+        font-size: 12px;
+        color: #666;
+        margin-top: 6px;
+        }
+
+
+
+
+    </style>
+</head>
+
+<body>
+{% include "navbar.html" %}
+
+<h1>Diagnóstico de Productos</h1>
+<p>Detección de problemas estructurales</p>
+
+<input
+    type="text"
+    id="searchInput"
+    placeholder="Buscar producto, empresa, categoría..."
+    style="
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        margin: 20px 0;
+    "
+>
+
+<h2>⚪ Productos sin categoría</h2>
+<div class="alert">
+    {% if products_without_category %}
+    <table class="limit-10">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Empresa</th>
+        </tr>
+        {% for p in products_without_category %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.name }}</td>
+            <td>
+                {% if p.company_id %}
+                {{ p.company_id[1] }}
+                {% else %}
+                Sin empresa
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No hay productos sin categoría 🎉</p>
+    {% endif %}
+</div>
+
+<div>
+    <h2>🚨 Productos sin ningún canal</h2>
+    <p>Total: {{ products_without_channels|length }}</p>
+
+    <table class="limit-10">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Categoría</th>
+            <th>POS</th>
+                <th>Web</th>
+        </tr>
+        {% for p in products_without_channels %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.company_id[1] if p.company_id else "Sin empresa" }}</td>
+            <td>{{ p.categ_id[1] if p.categ_id else "Sin categoría" }}</td>
+                <td>
+                    {% if p.available_in_pos %}
+                    Sí
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+                <td>
+                    {% if p.website_published %}
+                    Sí
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>⚠️ Productos solo en POS</h2>
+    <p>Total: {{ products_only_pos|length }}</p>
+
+    <table class="limit-10">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Categoría</th>
+        </tr>
+        {% for p in products_only_pos %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.company_id[1] if p.company_id else "Sin empresa" }}</td>
+            <td>{{ p.categ_id[1] if p.categ_id else "Sin categoría" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>🌐 Productos solo en Web</h2>
+    <p>Total: {{ products_only_web|length }}</p>
+
+    <table class="limit-10">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Categoría</th>
+        </tr>
+        {% for p in products_only_web %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.company_id[1] if p.company_id else "Sin empresa" }}</td>
+            <td>{{ p.categ_id[1] if p.categ_id else "Sin categoría" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+</div>
+
+<div>
+    <h2>Productos por empresa</h2>
+
+    {% for company, items in products_by_company.items() %}
+    <div class="warning">
+        <h3>{{ company }} ({{ items|length }})</h3>
+        <table class="limit-10">
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Activo</th>
+                <th>POS</th>
+                <th>Web</th>
+            </tr>
+            {% for p in items %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.name }}</td>
+                <td>
+                    {% if p.categ_id %}
+                    {{ p.categ_id[1] }}
+                    {% else %}
+                    Sin categoría
+                    {% endif %}
+                </td>
+                <td>{{ p.active }}</td>
+                <td>
+                    {% if p.available_in_pos %}
+                    Sí
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+                <td>
+                    {% if p.website_published %}
+                    Sí
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+            </tr>
+
+            {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
+</div>
+</body>
+<script>
+function filterTables() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const tables = document.querySelectorAll("table");
+
+    tables.forEach(table => {
+        const rows = table.querySelectorAll("tr");
+        let visibleCount = 0;
+
+        rows.forEach((row, index) => {
+            if (index === 0) return; // header
+
+            const text = row.innerText.toLowerCase();
+
+            if (text.includes(input)) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Si hay búsqueda activa → quitar límite visual
+        if (input.length > 0) {
+            table.classList.remove("limit-10");
+        } else {
+            table.classList.add("limit-10");
+        }
+    });
+}
+
+document.getElementById("searchInput").addEventListener("keyup", filterTables);
+</script>
+
+</html>
